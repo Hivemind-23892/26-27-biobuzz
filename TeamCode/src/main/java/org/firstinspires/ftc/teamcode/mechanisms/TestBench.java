@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
+import androidx.annotation.NonNull;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -8,7 +10,7 @@ public class TestBench {
 
 private DigitalChannel touchSensor; // touchSensorIntake
 
-public void init(HardwareMap hwMap) {
+public void init( HardwareMap hwMap) {
     touchSensor = hwMap.get(DigitalChannel.class, "touch_sensor");
     touchSensor.setMode(DigitalChannel.Mode.INPUT);
 

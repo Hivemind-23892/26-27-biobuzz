@@ -16,15 +16,13 @@ import org.firstinspires.ftc.teamcode.mechanisms.TestBench1;
         @Override
         public void loop() {
             // If the 'A' button is pressed, run the motor. Otherwise, stop it.
-            if (gamepad1.left_stick_y) {
-                bench.setMotorSpeed(0.5);
-            } else {
-                bench.setMotorSpeed(0.0);
-            }
+            bench.setMotorSpeed(-gamepad1.left_stick_y);
+            bench.setMotorSpeed(-gamepad1.right_stick_y);
 
             // Optional: show the button state on your driver station
             telemetry.addData("A Button Pressed", gamepad1.a);
         }
+
     }
 
 
