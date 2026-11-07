@@ -40,42 +40,35 @@ public class MecanumDrive {
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD);
 
         imu.initialize(new IMU.Parameters(RevOrientation));
+
+
     }
 
-    public void drive(double forward, double strafe, double rotate) {
-        // FIXED WHEEL MIXING FORMULA:
-        // Changed the front wheels to subtract forward (-forward) and back wheels to add forward (+forward).
-        // This stops your front and back motors from fighting each other when trying to go forward/backward.
-        double frontLeftPower  = forward + strafe + rotate;
-        double backLeftPower   =  -forward - strafe + rotate;
-        double frontRightPower = forward - strafe - rotate;
-        double backRightPower  =  -forward + strafe - rotate;
-
-        double maxPower = 1.0;
-        double maxSpeed = 1.0;
-
-        maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
-        maxPower = Math.max(maxPower, Math.abs(frontRightPower));
-        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
-        maxPower = Math.max(maxPower, Math.abs(backRightPower));
-
-        topleft.setPower(maxSpeed * (frontLeftPower / maxPower));
-        topright.setPower(maxSpeed * (frontRightPower / maxPower));
-        bottomleft.setPower(maxSpeed * (backLeftPower / maxPower));
-        bottomright.setPower(maxSpeed * (backRightPower / maxPower));
-    }
 
     public void driverFieldRelative(double forward, double strafe, double rotate) {
-        double theta = Math.atan2(forward, strafe);
-        double r = Math.hypot(strafe, forward);
+     double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
-        theta = AngleUnit.normalizeRadians(theta -
-                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+        double rotX = strafe * Math.cos(-botHeading) - forward * Math.sin((-botHeading));
+        double rotY = strafe * Math.sin(-botHeading) + forward * Math.cos((-botHeading));
 
-        double newForward = r * Math.sin(theta);
-        double newStrafe = r * Math.cos(theta);
+        rotX = rotX * 1.1;
 
-        this.drive(newForward, newStrafe, rotate);
+        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rotate),1 );
+
+        double frontLeftPower = (rotY + rotX + rotate) / denominator;
+        double backLeftPower = (rotY - rotX + rotate) / denominator;
+        double frontRightPower = (rotY - rotX - rotate) / denominator;
+        double bottomRightPower = (rotY + rotX - rotate) / denominator;
+
+           topleft.setPower(frontLeftPower);
+            bottomleft.setPower(backLeftPower);
+            topright.setPower(frontRightPower);
+            bottomleft.setPower(bottomRightPower);
+
+
+
+
+
     }
 }
 
